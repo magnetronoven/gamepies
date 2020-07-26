@@ -20,4 +20,8 @@
         showWaitingRoom()
     })
 
+    document.querySelector(".testbutton").addEventListener("click", () => {
+        socket.emit("testtest")
+    })
+
 })()
