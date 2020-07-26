@@ -16,4 +16,8 @@
         waiting_room.style.display = "block"
     }
 
+    socket.on("we-allready-know-you", () => {
+        showWaitingRoom()
+    })
+
 })()

@@ -1,6 +1,7 @@
 const User = require("./model/User")
-const view = require("../view")
+const View = require("../view")
 
+const viewObject = new View()
 let users = []
 
 module.exports = function(io) {
@@ -9,8 +10,17 @@ module.exports = function(io) {
 
 function newSocketConnection(socket) {
 
+    // If a user had disconnected
+    for (let i = 0; i < users.length; i++) {
+        if(users[i].ip === socket.request.connection.remoteAddress) {
+            socket.emit("we-allready-know-you")
+        }
+    }
+
     socket.on('disconnect', () => {
-        // connections.splice(connections.indexOf(socket), 1)
+        // users = users.filter(user => {
+        //     return user.socket !== socket;
+        // })
         console.log("a user disconnected")
     })
 
@@ -24,8 +34,11 @@ function setSocketEvents(socket) {
 
 function getSocketEvents(socket) {
     socket.on("user-connect", (username, callback) => {
-        users.push(new User(socket, username))
-        view.addUsernameToList(username)
+
+        let ip = socket.request.connection.remoteAddress;
+        users.push(new User(socket, username, ip))
+        viewObject.renderUsers(users)
+
         callback()
     })
 }

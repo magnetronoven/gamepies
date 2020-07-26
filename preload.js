@@ -11,8 +11,13 @@ let games = [
 	new Quiplash()
 ]
 
+function getGame(gameName) {
+	for (let i = 0; i < games.length; i++) {
+		if(games[i].name === gameName) return games[i]
+	}
+}
+
 window.addEventListener('DOMContentLoaded', () => {
-	// serverObject = 
 	document.querySelector(".server-details").innerHTML = `Server running on ${ip.address()}`
 	setGames()
 })
@@ -21,6 +26,15 @@ function setGames() {
 	let gamesElementContainer = document.querySelector(".games")
 
 	games.forEach(game => {
-		gamesElementContainer.insertAdjacentHTML('beforeend', `<div>${game.name}</div>`)
+		let gameElement = document.createElement("div")
+		gameElement.innerHTML = game.titlename
+		gameElement.addEventListener("click", () => startGame(game.name))
+		gamesElementContainer.appendChild(gameElement)
 	})
+}
+
+function startGame(gameName) {
+	const gameElement = document.querySelector(".game")
+	gameElement.innerHTML = getGame(gameName).getHtmlContent()
+	gameElement.style.display = "block"
 }

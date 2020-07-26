@@ -7,15 +7,15 @@ function createWindow () {
   const mainWindow = new BrowserWindow({
     width: 1920,
     height: 1080,
-    frame: false,
-    fullscreen: true,
+    // frame: false,
+    // fullscreen: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js')
     }
   })
 
   // and load the index.html of the app.
-  mainWindow.loadFile('index.html')
+  mainWindow.loadFile('./view/index.html')
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
