@@ -5,16 +5,24 @@ const io = require('socket.io')(http)
 const socketio = require('./socketio');
 const port = 3000
 
-module.exports = function() {
-    app.use(express.static('server/public'))
-    
-    app.get('/', (req, res) => {
-        res.sendFile(__dirname + '/public/index.html')
-    });
+module.exports = class Server {
 
-    socketio(io);
+    constructor() {
+        app.use(express.static('server/public'))
+        
+        app.get('/', (req, res) => {
+            res.sendFile(__dirname + '/public/index.html')
+        });
     
-    http.listen(port, () => {
-        console.log(`listening on localhost:${port}`)
-    });
+        socketio(io);
+        
+        http.listen(port, () => {
+            console.log(`listening on localhost:${port}`)
+        });
+    }
+
+    getIo() {
+        return io
+    }
+    
 }
