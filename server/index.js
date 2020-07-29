@@ -7,7 +7,15 @@ const User = require('../model/User')
 
 module.exports = class Server {
 
-    constructor(users) {
+    constructor(users, newUserCallback, gameObject) {
+        this.newUserCallback = newUserCallback
+        this.gameObject = gameObject
+        this.users = users
+        this.setExpress()
+        io.on('connection', (socket) => this.newSocketConnection(socket));
+    }
+
+    setExpress() {
         app.use(express.static('server/public'))
         
         app.get('/', (req, res) => {
@@ -17,9 +25,6 @@ module.exports = class Server {
         http.listen(port, () => {
             console.log(`listening on localhost:${port}`)
         });
-        this.users = users
-        
-        io.on('connection', (socket) => this.newSocketConnection(socket));
     }
 
     getIo() {
@@ -31,7 +36,10 @@ module.exports = class Server {
         // If a user had disconnected
         for (let i = 0; i < this.users.length; i++) {
             if(this.users[i].ip === socket.request.connection.remoteAddress) {
-                socket.emit("we-allready-know-you")
+                // socket.emit("we-allready-know-you")
+                // Set the new socket to the allready known user
+                this.users[i].socket = socket
+                this.newUserCallback.call(this.gameObject, socket)
             }
         }
     
@@ -50,9 +58,10 @@ module.exports = class Server {
     getSocketEvents(socket) {
         socket.on("user-connect", (username, callback) => {
     
-            let ip = socket.request.connection.remoteAddress;
+            let ip = socket.request.connection.remoteAddress
             this.users.push(new User(socket, username, ip))
             this.renderUsers(this.users)
+            this.newUserCallback.call(this.gameObject, socket)
     
             callback()
         })

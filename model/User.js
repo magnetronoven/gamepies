@@ -3,5 +3,10 @@ module.exports = class User {
         this.socket = socket
         this.username = username
         this.ip = ip
+
+        // Quiplash
+        this.quiplash_has_answered = false
+        this.quiplash_questions = []
+        this.quiplash_answers = []
     }
 }

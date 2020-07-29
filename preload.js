@@ -15,17 +15,41 @@ window.addEventListener('DOMContentLoaded', () => {
 class Gamepies {
 	constructor() {
 		this.users = []
-		this.server = new Server(this.users)
+		this.server = new Server(this.users, this.newUserSetEvents, this)
 		this.io = this.server.getIo()
 		this.games = [
 			new Quiplash(this.io, this.users),
 		]
 		this.renderGamesOnHomeScreen()
+		this.activeGame = null
 	}
 
 	getGame(gameName) {
 		for (let i = 0; i < this.games.length; i++) {
 			if(this.games[i].name === gameName) return this.games[i]
+		}
+	}
+
+	newUserSetEvents(socket) {
+		// Set all the events needed in the games
+		this.games.forEach(game => {
+			game.setSocketEvents(socket)
+		})
+
+		console.log(this.activeGame)
+
+		if(this.activeGame !== null) {
+			let activeGame = this.getGame(this.activeGame)
+
+			if(activeGame.gameState !== null) {
+				// Go to gamestate
+				activeGame.playerReconnect(socket)
+			} else {
+				// Go to waiting screen
+				socket.emit("waiting-room")
+			}
+		} else {
+			socket.emit("waiting-room")
 		}
 	}
 
@@ -45,6 +69,8 @@ class Gamepies {
 		const gameElement = document.querySelector(".game")
 		gameElement.innerHTML = game.getHtmlContent()
 		gameElement.style.display = "block"
+		document.querySelector(".start-screen").style.display = "none"
+		this.activeGame = gameName
 		game.startGame()
 	}
 }
