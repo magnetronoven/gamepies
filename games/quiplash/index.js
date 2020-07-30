@@ -70,33 +70,63 @@ module.exports = class Quiplash {
         })
     }
 
-    startAnswerRound() {
+    async startAnswerRound() {
+        
         this.showSection("answers")
         console.log("Doneee")
 
         const qustion_element = document.querySelector(".answers_question")
         const answers_element = document.querySelectorAll(".answers_answer")
         const next_button = document.querySelector(".next-button")
+        let times_clicked = 0
+        let question = this.questions[0]
 
-        for (let i = 0; i < this.questions.length; i++) {
-            await showAnswer(i)
-        }
+        // for (let i = 0; i < this.questions.length; i++) {
+        //     await showAnswer.call(this, this.questions[i])
+        // }
 
-        async function showAnswer(i) {
-            return new Promise((res) => {
-                let times_clicked = 0
-                answers_element.forEach(a => a.innerHTML = "")
-                qustion_element.innerHTML = this.questions[i]
+        next_button.addEventListener("click", () => {
+            
+            times_clicked++
 
-                next_button.addEventListener("click", () => {
-                    times_clicked++
-                    if(times_clicked === 1) {
-                        // answers_element[0]
-                        // Maak de antwoorden functie
+            let users = []
+            let usersAnswers = []
+
+            // Search for the users with the same question
+            for (let i = 0; i < this.users.length; i++) {
+                for (let j = 0; j < this.users[i].quiplash_questions.length; j++) {
+
+                    if(this.users[i].quiplash_questions[j] === question) {
+                        users.push(this.users[i])
+                        usersAnswers.push(this.users[i].quiplash_answers[j])
                     }
-                })
-            })
-        }
+                }
+            }
+
+            if(times_clicked === 1) {
+                answers_element.forEach(a => a.innerHTML = "")
+                qustion_element.innerHTML = question
+            }
+            if(times_clicked === 2) {
+                answers_element[0].innerHTML = usersAnswers[0]
+            }
+            if(times_clicked === 3) {
+                answers_element[1].innerHTML = usersAnswers[1]
+            }
+        })
+
+        // function showAnswer(question) {
+        //     return new Promise((res) => {
+                
+
+                
+
+        //         console.log(users)
+        //         console.log(usersAnswers)
+
+                
+        //     })
+        // }
     }
 
     allUsersHaveAnswered() {
